@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polymarket Timezone</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      width: 340px;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #e4e4e7;
+      padding: 20px;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .header-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .header h1 {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .header p {
+      font-size: 11px;
+      color: #a1a1aa;
+      margin-top: 2px;
+    }
+
+    .setting-group {
+      margin-bottom: 16px;
+    }
+
+    .setting-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: #a1a1aa;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    /* Custom Dropdown Styles */
+    .custom-select {
+      position: relative;
+      width: 100%;
+    }
+
+    .select-trigger {
+      width: 100%;
+      padding: 12px 40px 12px 14px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #e4e4e7;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .select-trigger:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .select-trigger.open {
+      border-color: #22c55e;
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.15);
+    }
+
+    .select-trigger::after {
+      content: '';
+      width: 0;
+      height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 5px solid #a1a1aa;
+      transition: transform 0.2s ease;
+    }
+
+    .select-trigger.open::after {
+      transform: rotate(180deg);
+    }
+
+    .select-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: #1e1e32;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      max-height: 280px;
+      overflow-y: auto;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .select-dropdown.open {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .select-dropdown::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .select-dropdown::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .select-dropdown::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .select-group-label {
+      padding: 10px 14px 6px;
+      font-size: 10px;
+      font-weight: 600;
+      color: #71717a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: rgba(0, 0, 0, 0.2);
+      position: sticky;
+      top: 0;
+    }
+
+    .select-option {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #d4d4d8;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .select-option:hover {
+      background: rgba(34, 197, 94, 0.1);
+      color: #22c55e;
+    }
+
+    .select-option.selected {
+      background: rgba(34, 197, 94, 0.15);
+      color: #22c55e;
+    }
+
+    .select-option.selected::before {
+      content: '✓';
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    .current-time {
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.2);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 16px;
+    }
+
+    .current-time-label {
+      font-size: 11px;
+      color: #22c55e;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .current-time-value {
+      font-size: 18px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 10px 14px;
+      background: rgba(34, 197, 94, 0.1);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #22c55e;
+      opacity: 0;
+      transform: translateY(-5px);
+      transition: all 0.3s ease;
+    }
+
+    .status.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .footer {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      text-align: center;
+    }
+
+    .footer a {
+      font-size: 11px;
+      color: #71717a;
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    .footer a:hover {
+      color: #22c55e;
+    }
+
+    /* Search input in dropdown */
+    .search-input {
+      width: calc(100% - 20px);
+      margin: 10px;
+      padding: 8px 12px;
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: #e4e4e7;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: #22c55e;
+    }
+
+    .search-input::placeholder {
+      color: #71717a;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="images/favicon-32x32.png" alt="Logo" class="header-icon" style="background: transparent; padding: 2px;">
+    <div>
+      <h1>Polymarket Timezone Converter</h1>
+      <p>Convert market times to your local zone</p>
+    </div>
+  </div>
+
+  <div class="setting-group">
+    <div class="setting-label">Your Timezone</div>
+    <div class="custom-select" id="timezone-select">
+      <div class="select-trigger" id="select-trigger">
+        <span id="selected-text">Loading...</span>
+      </div>
+      <div class="select-dropdown" id="select-dropdown">
+        <input type="text" class="search-input" id="search-input" placeholder="Search timezones...">
+        <div id="options-container"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="current-time">
+    <div class="current-time-label">Current Time in Selected Zone</div>
+    <div class="current-time-value" id="current-time">--:--:-- --</div>
+  </div>
+
+  <div class="status" id="status">
+    <div class="status-dot"></div>
+    <span>Settings saved! Refresh Polymarket to apply.</span>
+  </div>
+
+  <div class="footer">
+    <a href="https://polymarket.com" target="_blank">Open Polymarket ↗</a>
+    <div style="margin-top: 8px; font-size: 10px; color: #52525b;">
+      made with ❤️ by <a href="https://x.com/heymakio" target="_blank" style="color: #71717a; text-decoration: none;">@heymakio</a>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

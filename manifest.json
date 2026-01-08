@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Polymarket Timezone Converter",
+  "version": "1.2",
+  "description": "Automatically converts event deadlines and settlement times from platform defaults to your local timezone.",
+  "icons": {
+    "16": "images/favicon-16x16.png",
+    "32": "images/favicon-32x32.png",
+    "48": "images/favicon-32x32.png",
+    "128": "images/favicon-32x32.png"
+  },
+  "permissions": ["scripting", "storage"],
+  "host_permissions": ["https://polymarket.com/*"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Polymarket Timezone Settings"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://polymarket.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
